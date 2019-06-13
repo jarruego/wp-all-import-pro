@@ -111,7 +111,14 @@ $.fn.wplupload  = function($options) {
 						if (index != -1)
 						{
 							$('#custom_type_selector').ddslick('select', {index: index });
-							
+
+							if (r.taxonomy_type){
+								var tindex = $('#taxonomy_to_import li:has(input[value="'+ r.taxonomy_type +'"])').index();
+								if (tindex != -1){
+									$('#taxonomy_to_import').ddslick('select', {index: tindex });
+								}
+							}
+
 							if (typeof r.url_bundle != "undefined")
 							{								
 								$('.auto-generate-template').css({'display':'inline-block'}).attr('rel', 'url_type');
@@ -154,9 +161,16 @@ $.fn.wplupload  = function($options) {
 						{
 							$('.wpallimport-choose-file').find('.wpallimport-upload-resource-step-two').slideDown();
 							$('.wpallimport-choose-file').find('.wpallimport-submit-buttons').show();		
-						}						
+						}
 
-						if (r.OK) {					
+						if (wp_all_import_is_php_compatible == "no" && r.name.search(/.*\.xlsx?$/) > -1){
+							$('.wpallimport-upgrade-notice[rel=php_excel]').slideDown();
+						}
+						else{
+							$('.wpallimport-upgrade-notice[rel=php_excel]').hide();
+						}
+
+						if (r.OK) {
 
 						} else if (r.error != undefined && '' != r.error.message) {
 							//$('#progressbar').html(r.error.message);

@@ -24,12 +24,25 @@
 				<?php						
 				if (!empty($terms_arr) and is_array($terms_arr)){
 					foreach ($terms_arr as $terms) {
+
+						// Apply mapping before splitting via separator symbol
+						if (! empty($post['tax_enable_mapping'][$ctx]) and !empty($post['tax_logic_mapping'][$ctx])){
+							$mapping_rules = json_decode($post['tax_mapping'][$ctx], true);
+							if ( ! empty( $mapping_rules) ){
+								foreach ($mapping_rules as $rule) {
+									if ( ! empty($rule[trim($terms)])){
+										$terms = trim($rule[trim($terms)]);
+										break;
+									}
+								}
+							}
+						}
 										
 						$terms_a = ( ! empty($post['tax_hierarchical_delim'][$ctx])) ? explode($post['tax_hierarchical_delim'][$ctx], $terms) : explode(',', $terms);			
 
 						if ( ! empty($terms_a) and is_array($terms_a)){
 							foreach ($terms_a as $lvl => $term) {
-								if ( ! empty($post['tax_mapping'][$ctx])){						
+								if ( ! empty($post['tax_mapping'][$ctx]) and empty($post['tax_logic_mapping'][$ctx])){
 									$mapping_rules = json_decode($post['tax_mapping'][$ctx], true);
 									if ( ! empty($mapping_rules) ){ 
 										foreach ($mapping_rules as $rule_number => $rule) {
@@ -40,9 +53,11 @@
 										}	
 									}
 								}
-								?>
-								<p><?php echo str_pad(trim($term), strlen(trim($term)) + $lvl, "-", STR_PAD_LEFT); ?></p>
-								<?php
+								if (!empty($term)) {
+									?>
+									<p><?php echo str_pad(trim($term), strlen(trim($term)) + $lvl, "-", STR_PAD_LEFT); ?></p>
+									<?php
+								}
 							}
 						}
 						else{

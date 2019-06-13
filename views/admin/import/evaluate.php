@@ -9,11 +9,11 @@
 		<p><?php _e('<strong>Note</strong>: Highlighting is turned off since can be very slow on large sets of elements.', 'wp_all_import_plugin') ?></p>
 	<?php endif ?>
 </div>
-<div id="current_xml">
+<div id="current_xml">	
 	<?php if ($is_csv): ?>
-		<?php PMXI_Render::render_csv_element($elements->item(0), false, '//'); ?>
+		<?php PMXI_Render::render_csv_element($elements->item($elements->length > 1 ? $show_element : 0), false, '//'); ?>
 	<?php else:?>
-		<?php PMXI_Render::render_xml_element($elements->item(0), false, '//'); ?>
+		<?php PMXI_Render::render_xml_element($elements->item($elements->length > 1 ? $show_element : 0), false, '//'); ?>
 	<?php endif;?>
 </div>
 <script type="text/javascript">

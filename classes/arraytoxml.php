@@ -15,17 +15,12 @@ class PMXI_ArrayToXML
     {                
 
     	$data = apply_filters('wp_all_import_json_to_xml', $data);
-
-        // turn off compatibility mode as simple xml throws a wobbly if you don't.
-        if (ini_get('zend.ze1_compatibility_mode') == 1)
-        {
-            ini_set ('zend.ze1_compatibility_mode', 0);
-        }
      
-        if ($xml == null)
-        {
-            $xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?><'.$rootNodeName .'/>');
-        }
+      if ($xml == null)
+      {
+          $xml = simplexml_load_string('<?xml version="1.0" encoding="utf-8"?><'.$rootNodeName .'/>');
+      }
+
      	if ( !empty($data)){
 	        // loop through the data passed in.
 	        foreach($data as $key => $value)
@@ -41,7 +36,9 @@ class PMXI_ArrayToXML
 	            // replace anything not alpha numeric
 	            // preg_replace('/^[0-9]+/i', '', preg_replace('/[^a-z0-9_]/i', '', $key))
 	            $key = preg_replace('/[^a-z0-9_]/i', '', $key);
-	             
+
+                if ($key && is_numeric($key[0])) $key = 'v' . $key;
+
 	            // if there is another array found recrusively call this function
 	            if (is_array($value) or is_object($value))
 	            {

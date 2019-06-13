@@ -6,12 +6,12 @@ if ( ! function_exists('get_file_curl') ):
 		
 		if ( ! preg_match('%^(http|ftp)s?://%i', $url) ) return;
 
-		$response = wp_remote_get($url);					
+		$response = wp_remote_get($url);
 
 		if ( ! is_wp_error($response) and ( ! isset($response['response']['code']) or isset($response['response']['code']) and ! in_array($response['response']['code'], array(401, 403, 404))) ) 
 		{
-			$rawdata = wp_remote_retrieve_body( $response );							
-			
+			$rawdata = wp_remote_retrieve_body( $response );
+
 			if (empty($rawdata))
 			{
 				$result = pmxi_curl_download($url, $fullpath, $to_variable);					
@@ -30,7 +30,7 @@ if ( ! function_exists('get_file_curl') ):
 			    fclose($fp);
 			}													
 			
-		    if ( preg_match('%\W(svg)$%i', basename($fullpath)) or preg_match('%\W(jpg|jpeg|gif|png)$%i', basename($fullpath)) and ( ! ($image_info = apply_filters('pmxi_getimagesize', @getimagesize($fullpath), $fullpath)) or ! in_array($image_info[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)) ) )
+		    if ( preg_match('%\W(svg)$%i', basename($fullpath)) or preg_match('%\W(jpg|jpeg|gif|png)$%i', basename($fullpath)) and ( ! ($image_info = apply_filters('pmxi_getimagesize', @getimagesize($fullpath), $fullpath)) or ! in_array($image_info[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP)) ) )
 			{			
 				$result = pmxi_curl_download($url, $fullpath, $to_variable);	
 				if ( ! $result and $iteration === false)
@@ -45,19 +45,24 @@ if ( ! function_exists('get_file_curl') ):
 
 		}
 		else
-		{ 						
-			$curl = pmxi_curl_download($url, $fullpath, $to_variable);							
+		{
 
-			if ($curl === false and $iteration === false)
-			{
-				$new_url = wp_all_import_translate_uri($url);
-				return ($new_url !== $url) ? get_file_curl($new_url, $fullpath, $to_variable, true) : ( is_wp_error($response) ? $response : false );								
-			}
+            $use_only_wp_http_api = apply_filters('wp_all_import_use_only_wp_http_api', false);
 
-			return ($curl === false) ? ( is_wp_error($response) ? $response : false ) : $curl;			
+            if ( false == $use_only_wp_http_api ){
+                $curl = pmxi_curl_download($url, $fullpath, $to_variable);
 
+                if ($curl === false and $iteration === false)
+                {
+                    $new_url = wp_all_import_translate_uri($url);
+                    return ($new_url !== $url) ? get_file_curl($new_url, $fullpath, $to_variable, true) : ( is_wp_error($response) ? $response : false );
+                }
+
+                return ($curl === false) ? ( is_wp_error($response) ? $response : false ) : $curl;
+            }
+
+            return $response;
 		}
-		
 	}
 
 endif;
@@ -70,7 +75,6 @@ if ( ! function_exists('pmxi_curl_download') ) {
 		
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 		$rawdata = curl_exec_follow($ch);	    	    
 
 	    $result = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -83,7 +87,11 @@ if ( ! function_exists('pmxi_curl_download') ) {
 			$fp = fopen($fullpath,'w');	    
 		    fwrite($fp, $rawdata);
 		    fclose($fp);			
-		}	    
+		}
+
+        if ( preg_match('%\W(jpg|jpeg|gif|png)$%i', basename($fullpath)) and ( ! ($image_info = apply_filters('pmxi_getimagesize', @getimagesize($fullpath), $fullpath)) or ! in_array($image_info[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)) ) ){
+            return false;
+        }
 
 	    return ($result == 200) ? (($to_variable) ? $rawdata : true) : false;
 	}
@@ -117,7 +125,11 @@ if ( ! function_exists('curl_exec_follow') ):
 	      if (!empty($url_data['user']) and !empty($url_data['pass'])){
 	      	curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
 			curl_setopt($ch, CURLOPT_USERPWD, $url_data['user']. ":" . $url_data['pass']); 
-			$newurl = $url_data['scheme'] . '://' . $url_data['host'] . $url_data['path'];
+			$newurl = $url_data['scheme'] . '://' . $url_data['host'];
+            if (!empty($url_data['port'])){
+                $newurl .= ':' . $url_data['port'];
+            }
+            $newurl .= $url_data['path'];
 			if (!empty($url_data['query']))
 			{
 				$newurl .= '?' . $url_data['query'];	
@@ -129,7 +141,7 @@ if ( ! function_exists('curl_exec_follow') ):
 	      curl_setopt($rch, CURLOPT_HEADER, true);
 	      curl_setopt($rch, CURLOPT_NOBODY, true);
 	      curl_setopt($rch, CURLOPT_FORBID_REUSE, false);
-	      curl_setopt($rch, CURLOPT_CONNECTTIMEOUT, 5);
+
 	      do
 	      {
 	        curl_setopt($rch, CURLOPT_URL, $newurl);

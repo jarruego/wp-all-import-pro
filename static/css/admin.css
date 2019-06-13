@@ -25,7 +25,9 @@
 	vertical-align: middle;
 	margin-left: 5px;
 	position: relative;
-	top: 4px;
+	top: -4px;
+	background-size: cover;
+
 }
 .wpallimport-plugin input.datepicker {
 	width: 8em;
@@ -262,7 +264,8 @@
 	padding-left: 30px;
 	cursor: pointer;
 }
-	.wpallimport-plugin .wpallimport-collapsed .wpallimport-collapsed-header h3{
+	.wpallimport-plugin .wpallimport-collapsed .wpallimport-collapsed-header h3,
+	.wpallimport-plugin .template_input h3{
 		line-height: 30px;
 		color:#425e99;
 		-webkit-touch-callout: none;
@@ -271,6 +274,17 @@
 		-moz-user-select: none;
 		-ms-user-select: none;
 		user-select: none;
+	}
+	.wpallimport-plugin .template_input h3{
+		/*margin-bottom: -15px;*/
+	}
+	.wpallimport-plugin .template_input .post_excerpt_edit_mode{
+		font-size: 14px;
+		border-bottom: 1px dotted #CCCCCC;
+	}
+	.wpallimport-plugin .template_input .collapse_mode_title,
+	.wpallimport-plugin .template_input .post_excerpt_edit_mode_expand{
+		display: none;
 	}
 .wpallimport-plugin .wpallimport-collapsed.closed .wpallimport-collapsed-header{
 	background: url('../img/ui_4.0/collapser.png') no-repeat 98% -30px;
@@ -433,7 +447,7 @@
 	height:25px;
 	padding-left: 20px;
 	color:#21759B;
-	font-family: "Open Sans",​sans-serif;
+	/*font-family: "Open Sans",​sans-serif;*/
 	padding-top: 2px;
 	text-decoration: underline;
 	display: block;
@@ -478,7 +492,7 @@
 .wpallimport-plugin #footer-upgrade{
 	/*float: left !important;*/
 }
-.wpallimport-plugin .wpallimport-overlay {
+.wpallimport-plugin .wpallimport-overlay, .wpallimport-plugin .wpallimport-super-overlay {
 	display:none; 
 	position:fixed; 
 	z-index:99999; 
@@ -511,10 +525,6 @@
 	background-color: #FFB8B8;
 	border: 1px solid #FF8383;
 	color: #000;
-}
-.wpallimport-plugin .upgrade_link{
-	color: #000 !important;
-	font-size: 1.3em !important;	
 }
 .wpallimport-plugin .auto-generate-template{
 	display: none;
@@ -591,6 +601,21 @@
 .wpallimport-plugin .wpallimport-trigger-options{
 	cursor: pointer;
 	margin: 5px 0;
+}
+.wpallimport-plugin .taxonomy_to_import_wrapper{
+	display: none;
+}
+.wpallimport-plugin .wp_all_import_change_taxonomy_type{
+	display: table;
+}
+.wpallimport-plugin .wp_all_import_change_taxonomy_type #taxonomy_to_import{
+	margin: 0;
+}
+.wpallimport-plugin .wp_all_import_change_taxonomy_type #taxonomy_to_import .dd-select{
+	padding: 5px 0;
+}
+.wpallimport-plugin .wp_all_import_change_taxonomy_type #taxonomy_to_import .dd-options li a{
+	padding: 5px;
 }
 /*--------------------------------------------------------------------------
 *
@@ -966,7 +991,38 @@
 .wpallimport-plugin .wpallimport-wrapper{
 	width: 1200px;
 }
-
+.wpallimport-plugin .wpallimport-step-4 .wpallimport-upgrade-notice{
+	background-color: #FFB8B8;
+	border: 1px solid #FF8383;
+	color: #000;
+	display: none;
+	line-height: 40px;
+	margin: 30px auto 0 -4px;
+	padding: 15px;
+	text-align: center;
+	width: 560px;
+}
+.wpallimport-plugin .wpallimport-choose-file .wpallimport-upgrade-notice{
+	background-color: #FFB8B8;
+	border: 1px solid #FF8383;
+	color: #000;
+	display: none;
+	line-height: 40px;
+	margin: 30px auto 0 29.8%;
+	padding: 15px;
+	text-align: center;
+	width: 650px;
+}
+.wpallimport-plugin .wpallimport-upgrade-notice p{
+	color: #000 !important;
+	font-size: 1.3em !important;
+	margin-bottom: 0;
+}
+.wpallimport-plugin .wpallimport-upgrade-notice .upgrade_link{
+	color: #000 !important;
+	font-size: 1.3em !important;
+	text-decoration: underline;
+}
 /*--------------------------------------------------------------------------
 *
 *	Step 1 - choose file
@@ -1230,7 +1286,8 @@
 	border: 1px solid #ddd;
 }
 .wpallimport-plugin #custom_type_selector, 
-.wpallimport-plugin #file_selector{
+.wpallimport-plugin #file_selector,
+.wpallimport-plugin #taxonomy_to_import{
 	margin: 0 auto;
 	margin-bottom: 20px;
 	text-align: left;
@@ -1244,15 +1301,21 @@
 .wpallimport-plugin .wpallimport-change-custom-type #custom_type_selector .dd-select{
 	padding: 5px 0 0;
 }
-.wpallimport-plugin #file_selector{
+.wpallimport-plugin #file_selector,
+.wpallimport-plugin #taxonomy_to_import{
 	margin-top: 30px;
 }
+.wpallimport-plugin #taxonomy_to_import .dd-options{
+	max-height: 300px;
+}
 .wpallimport-plugin #custom_type_selector .dd-options li,
-.wpallimport-plugin #file_selector .dd-options li{
+.wpallimport-plugin #file_selector .dd-options li,
+.wpallimport-plugin #taxonomy_to_import .dd-options li{
 	margin-bottom: 0;
 }
 .wpallimport-plugin #custom_type_selector .dd-options li .dd-option,
-.wpallimport-plugin #file_selector .dd-options li .dd-option{
+.wpallimport-plugin #file_selector .dd-options li .dd-option,
+.wpallimport-plugin #taxonomy_to_import .dd-options li .dd-option{
 	font-size: 18px;
 	color: #555;
 	border: none;
@@ -1265,7 +1328,9 @@
 	.wpallimport-plugin #custom_type_selector .dd-options li .dd-option:hover, 
 	.wpallimport-plugin #custom_type_selector .dd-options li .dd-option-selected,
 	.wpallimport-plugin #file_selector .dd-options li .dd-option:hover, 
-	.wpallimport-plugin #file_selector .dd-options li .dd-option-selected{
+	.wpallimport-plugin #file_selector .dd-options li .dd-option-selected,
+	.wpallimport-plugin #taxonomy_to_import .dd-options li .dd-option:hover,
+	.wpallimport-plugin #taxonomy_to_import .dd-options li .dd-option-selected{
 		background: #eee;
 		color: #555;
 	}
@@ -1275,13 +1340,15 @@
 		color: #fff;
 	}*/
 .wpallimport-plugin #custom_type_selector .dd-select,
-.wpallimport-plugin #file_selector .dd-select{
+.wpallimport-plugin #file_selector .dd-select,
+.wpallimport-plugin #taxonomy_to_import .dd-select{
 	background: #fff !important;
 	padding: 10px 0;
 	margin-left: -5px;
 }
 .wpallimport-plugin #custom_type_selector .dd-selected,
-.wpallimport-plugin #file_selector .dd-selected{
+.wpallimport-plugin #file_selector .dd-selected,
+.wpallimport-plugin #taxonomy_to_import .dd-selected{
 	color: #000;
 	font-weight: normal;
 	font-size: 18px;	
@@ -1289,10 +1356,12 @@
 	padding: 0 10px;
 	line-height: 24px;
 }
-.wpallimport-plugin .change_file #file_selector .dd-select{
+.wpallimport-plugin .change_file #file_selector .dd-select,
+.wpallimport-plugin .change_file #taxonomy_to_import .dd-select{
 	padding: 5px 0 0;
 }
-	.wpallimport-plugin .change_file #file_selector .dd-options .dd-option{
+	.wpallimport-plugin .change_file #file_selector .dd-options .dd-option,
+	.wpallimport-plugin .change_file #taxonomy_to_import .dd-options .dd-option{
 		padding: 0 10px;
 	}
 .wpallimport-plugin .dd-options{
@@ -1381,8 +1450,8 @@
 }
 .wpallimport-plugin #custom_type_selector .dd-option .dashicon-product:before,
 .wpallimport-plugin #custom_type_selector .dd-selected .dashicon-product:before{
-	font-family: "dashicons";
-	content: "\f174";
+	font-family: "WooCommerce";
+	content: "\e006";
 	color: #555;
 	margin-top: 0;
 }
@@ -1398,13 +1467,20 @@
 .wpallimport-plugin #custom_type_selector .dd-option .dashicon-cpt:before,
 .wpallimport-plugin #custom_type_selector .dd-selected .dashicon-cpt:before{
 	font-family: "dashicons";
-	content: "\f333";
+	content: "\f111";
 	color: #555;
+	margin-top: 0;
 }
 .wpallimport-plugin #custom_type_selector .dd-option .dashicon-import_users:before,
 .wpallimport-plugin #custom_type_selector .dd-selected .dashicon-import_users:before{
 	font-family: "dashicons";
 	content: "\f110";
+	color: #555;
+}
+.wpallimport-plugin #custom_type_selector .dd-option .dashicon-taxonomies:before,
+.wpallimport-plugin #custom_type_selector .dd-selected .dashicon-taxonomies:before{
+	font-family: "dashicons";
+	content: "\f318";
 	color: #555;
 }
 .wpallimport-plugin #custom_type_selector .dd-option:hover .dashicon:before,
@@ -2325,7 +2401,7 @@
 }
 .wpallimport-plugin .wpallimport-cf-menu li a{
 	padding: 0;
-	font-family: "Open Sans",​sans-serif;
+	/*font-family: "Open Sans",​sans-serif;*/
 	font-size: 12px;
 	display: inline;
 	color: #777;
@@ -2412,7 +2488,9 @@
 .wpallimport-plugin .options .wpallimport-submit-buttons{	
 	position: relative;
 	text-align: center;
-	top: 10px;	
+	top: 10px;
+	height: 60px;
+
 }
 .wpallimport-plugin form.options{
 	position: relative;
@@ -2697,6 +2775,20 @@
 	background: url('../img/ui_4.0/drag.png') 0 50% no-repeat;
 	padding: 10px 10px 10px 40px;
 	color: #777;
+}
+.wpallimport-plugin .new_element_ico{
+	padding: 10px 10px 10px 40px;
+	color: #777;
+	position: relative;
+}
+.wpallimport-plugin .new_element_ico::before{
+	font-family: "dashicons";
+	content: "\f464";
+	font-size: 33px;
+	position: absolute;
+	top: 25px;
+	left: 0;
+	color: #ccc;
 }
 
 /*--------------------------------------------------------------------------
@@ -2987,7 +3079,18 @@
 	padding-top: 35px;
 	vertical-align: middle;
 }*/
-
+.wpallimport-plugin .pmxi-admin-imports{
+	table-layout: fixed;
+}
+.wpallimport-plugin .pmxi-admin-imports .column-actions{
+	width: 130px;
+}
+.wpallimport-plugin .pmxi-admin-imports .column-summary{
+	width: 220px;
+}
+.wpallimport-plugin .pmxi-admin-imports .column-info{
+	width: 150px;
+}
 /*--------------------------------------------------------------------------
 *
 *	Setting Page
@@ -3129,6 +3232,10 @@ body.rtl.wpallimport-plugin .show_hints
 	.wpallimport-plugin .wpallimport-extra-text-left{
 		width: 36%;
 	}
+	.wpallimport-plugin .wpallimport-choose-file .wpallimport-upgrade-notice{
+		margin: 30px auto 0 28.4%;
+		width: 650px;
+	}
 	.wpallimport-plugin .wpallimport-extra-text-right{
 		width: 37%;
 	}
@@ -3169,6 +3276,10 @@ body.rtl.wpallimport-plugin .show_hints
 	}
 	.wpallimport-plugin .wpallimport-extra-text-left{
 		width: 35%;
+	}
+	.wpallimport-plugin .wpallimport-choose-file .wpallimport-upgrade-notice{
+		margin: 30px auto 0 26.7%;
+		width: 666px;
 	}
 	.wpallimport-plugin .wpallimport-extra-text-right{
 		width: 35%;
@@ -3231,6 +3342,10 @@ body.rtl.wpallimport-plugin .show_hints
 	}
 	.wpallimport-plugin .wpallimport-extra-text-left{
 		width: 33%;
+	}
+	.wpallimport-plugin .wpallimport-choose-file .wpallimport-upgrade-notice{
+		margin: 30px auto 0 24.7%;
+		width: 625px;
 	}
 	.wpallimport-plugin .wpallimport-extra-text-right{
 		width: 34%;
@@ -3306,6 +3421,10 @@ body.rtl.wpallimport-plugin .show_hints
 	}
 	.wpallimport-plugin .wpallimport-extra-text-left{
 		width: 30%;
+	}
+	.wpallimport-plugin .wpallimport-choose-file .wpallimport-upgrade-notice{
+		margin: 30px auto 0 22.7%;
+		width: 553px;
 	}
 	.wpallimport-plugin .wpallimport-extra-text-right{
 		width: 31%;
@@ -3402,6 +3521,10 @@ body.rtl.wpallimport-plugin .show_hints
 	}
 	.wpallimport-plugin .wpallimport-extra-text-left{
 		width: 29%;
+	}
+	.wpallimport-plugin .wpallimport-choose-file .wpallimport-upgrade-notice{
+		margin: 30px auto 0 22%;
+		width: 530px;
 	}
 	.wpallimport-plugin .wpallimport-extra-text-right{
 		width: 30%;

@@ -1,47 +1,155 @@
+<?php if ( ! $is_license_active ): ?>
+	<form name="settings" method="post" action="" class="settings">
+
+		<div class="wpallimport-header">
+			<div class="wpallimport-logo"></div>
+			<div class="wpallimport-title">
+				<p style="font-size:18px !important;"><?php _e('WP All Import', 'wp_all_import_plugin'); ?></p>
+				<h3><?php _e('Settings', 'wp_all_import_plugin'); ?></h3>
+			</div>
+		</div>
+
+		<h2 style="padding:0px;"></h2>
+
+		<div class="wpallimport-setting-wrapper">
+			<?php if ($this->errors->get_error_codes()): ?>
+				<?php $this->error() ?>
+			<?php endif ?>
+
+			<h3><?php _e('Licenses', 'wp_all_import_plugin') ?></h3>
+
+			<table class="form-table">
+				<tbody>
+
+				<?php foreach ($addons as $class => $addon) : if ( ! $addon['active'] ) continue; ?>
+					<tr>
+						<th scope="row"><label><?php _e('License Key', 'wp_all_import_plugin'); ?></label></th>
+						<td>
+							<input type="password" class="regular-text" name="licenses[<?php echo $class; ?>]" value="<?php if (!empty($post['licenses'][$class])) esc_attr_e( PMXI_Plugin::decode($post['licenses'][$class]) ); ?>"/>
+							<?php if( ! empty($post['licenses'][$class]) ) { ?>
+
+								<?php if( ! empty($post['statuses'][$class]) && $post['statuses'][$class] == 'valid' ) { ?>
+									<p style="color:green; display: inline-block;"><?php _e('Active', 'wp_all_import_plugin'); ?></p>
+								<?php } else { ?>
+									<input type="submit" class="button-secondary" name="pmxi_license_activate[<?php echo $class; ?>]" value="<?php _e('Activate License', 'wp_all_import_plugin'); ?>"/>
+									<span style="line-height: 28px;"><?php echo $post['statuses'][$class]; ?></span>
+								<?php } ?>
+
+							<?php } ?>
+							<p class="description"><?php _e('A license key is required to access plugin updates. You can use your license key on an unlimited number of websites. Do not distribute your license key to 3rd parties. You can get your license key in the <a target="_blank" href="http://www.wpallimport.com/portal">customer portal</a>.', 'wp_all_import_plugin'); ?></p>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+
+			<div class="clear"></div>
+
+			<p class="submit-buttons">
+				<?php wp_nonce_field('edit-license', '_wpnonce_edit-license') ?>
+				<input type="hidden" name="is_license_submitted" value="1" />
+				<input type="submit" class="button-primary" value="Save License" />
+			</p>
+
+		</div>
+	</form>
+	<form name="settings" method="post" action="" class="settings">
+
+		<table class="form-table">
+			<tbody>
+
+			<tr>
+				<th scope="row"><label><?php _e('Automatic Scheduling License Key', 'wp_all_import_plugin'); ?></label></th>
+				<td>
+					<input type="password" class="regular-text" name="scheduling_license"
+						   value="<?php if (!empty($post['scheduling_license'])) esc_attr_e(PMXI_Plugin::decode($post['scheduling_license'])); ?>"/>
+					<?php if (!empty($post['scheduling_license'])) { ?>
+
+						<?php if (!empty($post['scheduling_license_status']) && $post['scheduling_license_status'] == 'valid') { ?>
+							<p style="color:green; display: inline-block;"><?php _e('Active', 'wp_all_import_plugin'); ?></p>
+						<?php } else { ?>
+							<input type="submit" class="button-secondary" name="pmxi_scheduling_license_activate"
+								   value="<?php _e('Activate License', 'wp_all_import_plugin'); ?>"/>
+							<span style="line-height: 28px;"><?php echo $post['scheduling_license_status']; ?></span>
+						<?php } ?>
+
+					<?php } ?>
+					<?php
+					$scheduling = \Wpai\Scheduling\Scheduling::create();
+					if(!($scheduling->checkLicense())){
+						?>
+						<p class="description"><?php _e('A license key is required to use Automatic Scheduling. If you have already subscribed, <a href="https://www.wpallimport.com/portal/automatic-scheduling/" target="_blank">click here to access your license key</a>. If you dont have a license, <a href="https://www.wpallimport.com/checkout/?edd_action=add_to_cart&download_id=515704" target="_blank">click here to subscribe</a>.', 'wp_all_export_plugin'); ?></p>
+						<?php
+					}
+					?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<div class="clear"></div>
+
+		<p class="submit-buttons">
+			<?php wp_nonce_field('edit-license', '_wpnonce_edit-scheduling-license') ?>
+			<input type="hidden" name="is_scheduling_license_submitted" value="1"/>
+			<input type="submit" class="button-primary" value="Save Scheduling License"/>
+		</p>
+	</form>
+<?php endif; ?>
+
 <form class="settings" method="post" action="" enctype="multipart/form-data">
+
+	<?php if ( $is_license_active ): ?>
 
 	<div class="wpallimport-header">
 		<div class="wpallimport-logo"></div>
 		<div class="wpallimport-title">
 			<p style="font-size:18px !important;"><?php _e('WP All Import', 'wp_all_import_plugin'); ?></p>
-			<h3><?php _e('Settings', 'wp_all_import_plugin'); ?></h3>			
-		</div>	
+			<h3><?php _e('Settings', 'wp_all_import_plugin'); ?></h3>
+		</div>
 	</div>
 
 	<h2 style="padding:0px;"></h2>
-	
+
 	<div class="wpallimport-setting-wrapper">
 		<?php if ($this->errors->get_error_codes()): ?>
 			<?php $this->error() ?>
 		<?php endif ?>
-		
-		<h3><?php _e('Import/Export Templates', 'wp_all_import_plugin') ?></h3>
-		<?php $templates = new PMXI_Template_List(); $templates->getBy()->convertRecords() ?>
-		<?php wp_nonce_field('delete-templates', '_wpnonce_delete-templates') ?>				
-		<?php if ($templates->total()): ?>
-			<table>
-				<?php foreach ($templates as $t): ?>
-					<tr>
-						<td>
-							<label class="selectit" for="template-<?php echo $t->id ?>"><input id="template-<?php echo $t->id ?>" type="checkbox" name="templates[]" value="<?php echo $t->id ?>" /> <?php echo $t->name ?></label>
-						</td>				
-					</tr>
-				<?php endforeach ?>
-			</table>
-			<p class="submit-buttons">				
-				<input type="submit" class="button-primary" name="delete_templates" value="<?php _e('Delete Selected', 'wp_all_import_plugin') ?>" />
-				<input type="submit" class="button-primary" name="export_templates" value="<?php _e('Export Selected', 'wp_all_import_plugin') ?>" />
-			</p>	
-		<?php else: ?>
-			<em><?php _e('There are no templates saved', 'wp_all_import_plugin') ?></em>
-		<?php endif ?>
-		<p>
-			<input type="hidden" name="is_templates_submitted" value="1" />
-			<input type="file" name="template_file"/>
-			<input type="submit" class="button-primary" name="import_templates" value="<?php _e('Import Templates', 'wp_all_import_plugin') ?>" />
-		</p>
-	</div>
 
+		<?php if (!empty($license_message)):?>
+			<div class="updated"><p><?php echo $license_message; ?></p></div>
+		<?php endif;?>
+
+	<?php endif; ?>
+
+	<h3><?php _e('Import/Export Templates', 'wp_all_import_plugin') ?></h3>
+	<?php $templates = new PMXI_Template_List(); $templates->getBy()->convertRecords() ?>
+	<?php wp_nonce_field('delete-templates', '_wpnonce_delete-templates') ?>
+	<?php if ($templates->total()): ?>
+		<table>
+			<?php foreach ($templates as $t): ?>
+				<tr>
+					<td>
+						<label class="selectit" for="template-<?php echo $t->id ?>"><input id="template-<?php echo $t->id ?>" type="checkbox" name="templates[]" value="<?php echo $t->id ?>" /> <?php echo $t->name ?></label>
+					</td>
+				</tr>
+			<?php endforeach ?>
+		</table>
+		<p class="submit-buttons">
+			<input type="submit" class="button-primary" name="delete_templates" value="<?php _e('Delete Selected', 'wp_all_import_plugin') ?>" />
+			<input type="submit" class="button-primary" name="export_templates" value="<?php _e('Export Selected', 'wp_all_import_plugin') ?>" />
+		</p>
+	<?php else: ?>
+		<em><?php _e('There are no templates saved', 'wp_all_import_plugin') ?></em>
+	<?php endif ?>
+	<p>
+		<input type="hidden" name="is_templates_submitted" value="1" />
+		<input type="file" name="template_file"/>
+		<input type="submit" class="button-primary" name="import_templates" value="<?php _e('Import Templates', 'wp_all_import_plugin') ?>" />
+	</p>
+	<?php if ( $is_license_active ): ?>
+	</div>
+	<?php endif ?>
 </form>
 
 <form name="settings" method="post" action="" class="settings">
@@ -61,7 +169,7 @@
 				<th scope="row"><label><?php _e('Cron Processing Time Limit', 'wp_all_import_plugin'); ?></label></th>
 				<td>
 					<input type="text" class="regular-text" name="cron_processing_time_limit" value="<?php echo esc_attr($post['cron_processing_time_limit']); ?>"/>
-					<p class="description"><?php _e('Leave blank to use your server\'s limit on script run times.', 'wp_all_import_plugin'); ?></p>
+					<p class="description"><?php _e('Maximum execution time for the cron processing script. If this is blank, the default value of 120 (2 minutes) will be used.', 'wp_all_import_plugin'); ?></p>
 				</td>
 			</tr>
 			<tr>
@@ -118,17 +226,7 @@
 	<h3><?php _e('Advanced Settings', 'wp_all_import_plugin') ?></h3>
 	
 	<table class="form-table">
-		<tbody>
-			<!--tr>
-				<th scope="row"><label><?php _e('XMLReader', 'wp_all_import_plugin'); ?></label></th>
-				<td>
-					<fieldset style="padding:0;">						
-						<input type="hidden" name="enable_xmlreader" value="0"/>
-						<label for="enable_xmlreader"><input type="checkbox" value="1" id="enable_xmlreader" name="enable_xmlreader" <?php echo (($post['enable_xmlreader']) ? 'checked="checked"' : ''); ?>><?php _e('Enable XMLReader', 'wp_all_import_plugin'); ?></label>																				
-					</fieldset>														
-					<p class="description"><?php _e('Much faster XML parsing process.', 'wp_all_import_plugin'); ?></p>									
-				</td>
-			</tr-->
+		<tbody>			
 			<tr>
 				<th scope="row"><label><?php _e('Chunk Size', 'wp_all_import_plugin'); ?></label></th>
 				<td>
@@ -152,35 +250,25 @@
 					<input type="text" class="regular-text" name="port" value="<?php echo esc_attr($post['port']); ?>"/>
 					<p class="description"><?php _e('Specify the port number to add if you\'re having problems continuing to Step 2 and are running things on a custom port. Default is blank.', 'wp_all_import_plugin'); ?></p>
 				</td>
-			</tr>		
+			</tr>			
 			<?php do_action('pmxi_settings_advanced', $post); ?>
 		</tbody>
-	</table>	
+	</table>
 
-	<h3><?php _e('Licenses', 'wp_all_import_plugin') ?></h3>
+	<h3><?php _e('Force Stream Reader', 'wp_all_import_plugin') ?></h3>
 	
 	<table class="form-table">
 		<tbody>
-
-			<?php foreach ($addons as $class => $addon) : if ( ! $addon['active'] ) continue; ?>		
-				<tr>
-					<th scope="row"><label><?php _e('License Key', 'wp_all_import_plugin'); ?></label></th>
-					<td>
-						<input type="text" class="regular-text" name="licenses[<?php echo $class; ?>]" value="<?php if (!empty($post['licenses'][$class])) esc_attr_e( $post['licenses'][$class] ); ?>"/>
-						<?php if( ! empty($post['licenses'][$class]) ) { ?>
-
-							<?php if( ! empty($post['statuses'][$class]) && $post['statuses'][$class] == 'valid' ) { ?>
-								<p style="color:green; display: inline-block;"><?php _e('Active', 'wp_all_import_plugin'); ?></p>							
-							<?php } else { ?>													
-								<input type="submit" class="button-secondary" name="pmxi_license_activate[<?php echo $class; ?>]" value="<?php _e('Activate License', 'wp_all_import_plugin'); ?>"/>
-								<span style="line-height: 28px;"><?php echo $post['statuses'][$class]; ?></span>
-							<?php } ?>
-						
-						<?php } ?>
-						<p class="description"><?php _e('A license key is required to access plugin updates. You can use your license key on an unlimited number of websites. Do not distribute your license key to 3rd parties. You can get your license key in the <a target="_blank" href="http://www.wpallimport.com/portal">customer portal</a>.', 'wp_all_import_plugin'); ?></p>
-					</td>
-				</tr>				
-			<?php endforeach; ?>					
+			<tr>
+				<th scope="row"><label><?php _e('Force WP All Import to use StreamReader instead of XMLReader to parse all import files', 'wp_all_import_plugin'); ?></label></th>
+				<td>
+					<fieldset style="padding:0;">						
+						<input type="hidden" name="force_stream_reader" value="0"/>
+						<label for="force_stream_reader"><input type="checkbox" value="1" id="force_stream_reader" name="force_stream_reader" <?php echo (($post['force_stream_reader']) ? 'checked="checked"' : ''); ?>><?php _e('Enable Stream Reader', 'wp_all_import_plugin'); ?></label>																				
+					</fieldset>					
+					<p class="description"><?php _e('XMLReader is much faster, but has a bug that sometimes prevents certain records from being imported with import files that contain special cases.', 'wp_all_import_plugin'); ?></p>
+				</td>
+			</tr>						
 		</tbody>
 	</table>			
 
@@ -194,15 +282,97 @@
 
 </form>
 
+<?php if ( $is_license_active ): ?>
+	<form name="settings" method="post" action="" class="settings">
+
+		<h3><?php _e('Licenses', 'wp_all_import_plugin') ?></h3>
+
+		<table class="form-table">
+			<tbody>
+
+			<?php foreach ($addons as $class => $addon) : if ( ! $addon['active'] ) continue; ?>
+				<tr>
+					<th scope="row"><label><?php _e('License Key', 'wp_all_import_plugin'); ?></label></th>
+					<td>
+						<input type="password" class="regular-text" name="licenses[<?php echo $class; ?>]" value="<?php if (!empty($post['licenses'][$class])) esc_attr_e( PMXI_Plugin::decode($post['licenses'][$class]) ); ?>"/>
+						<?php if( ! empty($post['licenses'][$class]) ) { ?>
+
+							<?php if( ! empty($post['statuses'][$class]) && $post['statuses'][$class] == 'valid' ) { ?>
+								<p style="color:green; display: inline-block;"><?php _e('Active', 'wp_all_import_plugin'); ?></p>
+							<?php } else { ?>
+								<input type="submit" class="button-secondary" name="pmxi_license_activate[<?php echo $class; ?>]" value="<?php _e('Activate License', 'wp_all_import_plugin'); ?>"/>
+								<span style="line-height: 28px;"><?php echo $post['statuses'][$class]; ?></span>
+							<?php } ?>
+
+						<?php } ?>
+						<p class="description"><?php _e('A license key is required to access plugin updates. You can use your license key on an unlimited number of websites. Do not distribute your license key to 3rd parties. You can get your license key in the <a target="_blank" href="http://www.wpallimport.com/portal">customer portal</a>.', 'wp_all_import_plugin'); ?></p>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+
+		<div class="clear"></div>
+
+		<p class="submit-buttons">
+			<?php wp_nonce_field('edit-license', '_wpnonce_edit-license') ?>
+			<input type="hidden" name="is_license_submitted" value="1" />
+			<input type="submit" class="button-primary" value="Save License" />
+		</p>
+
+	</form>
+
+	<form name="settings" method="post" action="" class="settings">
+
+		<table class="form-table">
+			<tbody>
+
+			<tr>
+				<th scope="row"><label><?php _e('Scheduling License Key', 'wp_all_export_plugin'); ?></label></th>
+				<td>
+					<input type="password" class="regular-text" name="scheduling_license"
+						   value="<?php if (!empty($post['scheduling_license'])) esc_attr_e(PMXI_Plugin::decode($post['scheduling_license'])); ?>"/>
+					<?php if (!empty($post['scheduling_license'])) { ?>
+
+						<?php if (!empty($post['scheduling_license_status']) && $post['scheduling_license_status'] == 'valid') { ?>
+							<p style="color:green; display: inline-block;"><?php _e('Active', 'wp_all_export_plugin'); ?></p>
+						<?php } else { ?>
+							<span style="line-height: 28px;"><?php echo $post['scheduling_license_status']; ?></span>
+						<?php } ?>
+
+					<?php } ?>
+					<?php
+					$scheduling = \Wpai\Scheduling\Scheduling::create();
+					if(!($scheduling->checkLicense())){
+						?>
+						<p class="description"><?php _e('A license key is required to use Automatic Scheduling. If you have already subscribed, <a href="https://www.wpallimport.com/portal/automatic-scheduling/" target="_blank">click here to access your license key</a>. If you dont have a license, <a href="https://www.wpallimport.com/checkout/?edd_action=add_to_cart&download_id=515704" target="_blank">click here to subscribe</a>.', 'wp_all_import_plugin'); ?></p>
+						<?php
+					}
+					?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<div class="clear"></div>
+
+		<p class="submit-buttons">
+			<?php wp_nonce_field('edit-license', '_wpnonce_edit-scheduling-license') ?>
+			<input type="hidden" name="is_scheduling_license_submitted" value="1"/>
+			<input type="submit" class="button-primary" value="Save Scheduling License"/>
+		</p>
+	</form>
+<?php endif; ?>
+
 <?php
 	$uploads = wp_upload_dir();
 	$functions = $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_IMPORT_UPLOADS_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'functions.php';
+    $functions = apply_filters( 'import_functions_file_path', $functions );
 	$functions_content = file_get_contents($functions);
 ?>
 <hr />
 <br>
 <h3><?php _e('Function Editor', 'wp_all_import_plugin') ?></h3>
-
 
 <textarea id="wp_all_import_code" name="wp_all_import_code"><?php echo (empty($functions_content)) ? "<?php\n\n?>": esc_textarea($functions_content);?></textarea>						
 

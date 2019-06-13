@@ -32,8 +32,18 @@
 			</div>			
 		</div>
 		
-		<?php $custom_type = get_post_type_object( PMXI_Plugin::$session->options['custom_type'] ); ?>		
-
+		<?php
+		switch (PMXI_Plugin::$session->options['custom_type']){
+			case 'taxonomies':
+				$custom_type = new stdClass();
+				$custom_type->labels = new stdClass();
+				$custom_type->labels->singular_name = __('Taxonomy Term', 'wp_all_import_plugin');
+				break;
+			default:
+				$custom_type = get_post_type_object( PMXI_Plugin::$session->options['custom_type'] );
+				break;
+		}
+		?>
 		<div id="import_finished">			
 			<h1><?php _e('Import Complete!', 'wp_all_import_plugin'); ?></h1>						
 			<div class="wpallimport-content-section wpallimport-console wpallimport-complete-warning">
@@ -46,7 +56,7 @@
 			<div class="wpallimport-content-section wpallimport-console wpallimport-orders-complete-warning">
 				<h3><?php printf(__('<span id="skipped_count">%s</span> orders were skipped during this import', 'wp_all_import_plugin'), $update_previous->skipped); ?></h3>
 				<h4>
-					<?php printf(__('WP All Import is unable import an order when it cannot match the products or customer specified.<br/><a href="%s" style="margin: 0;">See the import log</a> for a list of which orders were skipped and why.', 'wp_all_import_plugin'), add_query_arg(array('id' => $update_previous->id, 'page' => 'pmxi-admin-history', 'action' => 'log', 'history_id' => PMXI_Plugin::$session->history_id, '_wpnonce' => wp_create_nonce( '_wpnonce-download_log' )), $this->baseUrl)); ?>
+					<?php printf(__('WP All Import is unable to import an order when it cannot match the products or customer specified. <a href="%s" style="margin: 0;">See the import log</a> for a list of which orders were skipped and why.', 'wp_all_import_plugin'), add_query_arg(array('id' => $update_previous->id, 'page' => 'pmxi-admin-history', 'action' => 'log', 'history_id' => PMXI_Plugin::$session->history_id, '_wpnonce' => wp_create_nonce( '_wpnonce-download_log' )), $this->baseUrl)); ?>
 				</h4>				
 				<input type="button" class="button button-primary button-hero wpallimport-large-button wpallimport-delete-and-edit" rel="<?php echo add_query_arg(array('id' => $update_previous->id, 'page' => 'pmxi-admin-manage', 'action' => 'delete_and_edit'), $this->baseUrl); ?>" value="<?php _e('Delete & Edit', 'wp_all_import_plugin'); ?>"/>				
 			</div>
@@ -151,16 +161,16 @@
 
 	$('.dismiss-speed-up-notify').click(function(e){
 		e.preventDefault();
-    	$.post('admin.php?page=pmxi-admin-settings&action=dismiss_speed_up', {dismiss: true}, function (data) {}, 'html');
-    	$('.wpallimport-speed-up-notify').addClass('dont_show_again').slideUp();
-    });
+		$.post('admin.php?page=pmxi-admin-settings&action=dismiss_speed_up', {dismiss: true}, function (data) {}, 'html');
+		$('.wpallimport-speed-up-notify').addClass('dont_show_again').slideUp();
+	});
 
-    $('.wpallimport-speed-up-notify-read-more').click(function(e){
-    	e.preventDefault();
-    	$.post('admin.php?page=pmxi-admin-settings&action=dismiss_speed_up', {dismiss: true}, function (data) {}, 'html');
-    	$('.wpallimport-speed-up-notify').addClass('dont_show_again').slideUp();
-    	window.open($(this).attr('href'), '_blank');
-    });
+	$('.wpallimport-speed-up-notify-read-more').click(function(e){
+		e.preventDefault();
+		$.post('admin.php?page=pmxi-admin-settings&action=dismiss_speed_up', {dismiss: true}, function (data) {}, 'html');
+		$('.wpallimport-speed-up-notify').addClass('dont_show_again').slideUp();
+		window.open($(this).attr('href'), '_blank');
+	});
 
 	$('#status').each(function () {
 
@@ -199,8 +209,6 @@
 		
 		$('#processbar').css({'visibility':'visible'});		
 
-	
-	
 	<?php if ( $ajax_processing ): ?>
 
 		var import_id = '<?php echo $update_previous->id; ?>';		
@@ -209,7 +217,7 @@
 			
 			$.get('admin.php?page=pmxi-admin-import&action=process&id=' + import_id + '&failures=' + failures + '&_wpnonce=' + wp_all_import_security, {}, function (data) {								
 
-				// responce with error
+				// response with error
 				if (data != null && typeof data.created != "undefined"){
 
 					$('.wpallimport-modal-message').hide();
@@ -220,9 +228,9 @@
 					$('#warnings').html(data.warnings);
 					$('#errors').html(data.errors);
 					$('#percents_count').html(data.percentage);
-				    $('#processbar div').css({'width': data.percentage + '%'});
+					$('#processbar div').css({'width': data.percentage + '%'});
 
-				    records_per_request = data.records_per_request;
+				  	records_per_request = data.records_per_request;
 
 					if ( data.done ){
 						clearInterval(update);		
@@ -236,19 +244,18 @@
 
 							// detect broken auto-created Unique ID and notify user
 							<?php if ( $this->isWizard and $update_previous->options['wizard_type'] == 'new' and ! $update_previous->options['deligate']): ?>
-								if ( data.imported != data.created )
-								{									
-									$('.wpallimport-complete-warning').show();
-								}																
+							if ( data.imported != data.created )
+							{
+								$('.wpallimport-complete-warning').show();
+							}
 							<?php endif; ?>
 
 							<?php if ( ! $update_previous->options['deligate'] and ! empty($update_previous->options['custom_type']) and $update_previous->options['custom_type'] == 'shop_order' and empty($update_previous->options['is_import_specified'])): ?>
-								if ( data.skipped > 0 )
-								{									
-									$('.wpallimport-orders-complete-warning').show();
-								}
+							if ( data.skipped > 0 )
+							{
+								$('.wpallimport-orders-complete-warning').show();
+							}
 							<?php endif; ?>
-
 
 							$('#import_finished').fadeIn();								
 							
@@ -261,7 +268,7 @@
 						}, 1000);						
 					} 
 					else
-					{ 
+					{
 						$('#loglist').append(data.log);
 						parse_element(0);
 					}
@@ -273,18 +280,24 @@
 					count_failures++;
 					$('.count_failures').val(count_failures);
 
+					if (data != null && typeof data != 'undefined' && typeof data.log != 'undefined'){
+						$('#loglist').append(data.log);
+						write_log();
+					}
+
+					if (data != null && typeof data != 'undefined' && parseInt(data.records_per_request)){
+						records_per_request = data.records_per_request;
+					}
+
 					if (count_failures > 4 || records_per_request < 2){
 						$('#process_notice').hide();
-						//$('#wpallimport-try-again').hide();
-						//$('.wp_all_import_restart_import').hide();
 						$('.wpallimport-modal-message').html($('#wpallimport-error-terminated').html()).show();
+						var errorMessage = "Import failed, please check logs";
+						if (data != null && typeof data != 'undefined' && typeof data.responseText != 'undefined'){
+						    errorMessage = data.responseText;
+						}
+						$('#status').html('Error ' + '<span class="pmxi_error_msg">' + errorMessage + '</span>');
 
-						if (data != null && typeof data != 'undefined'){
-							$('#status').html('Error ' + '<span class="pmxi_error_msg">' + data.responseText + '</span>');
-						}
-						else{
-							$('#status').html('Error');
-						}
 						clearInterval(update);					
 						window.onbeforeunload = false;
 
@@ -312,11 +325,11 @@
 						$('#wpallimport-records-per-iteration').html(records_per_request);
 						$('#wpallimport-new-records-per-iteration').html(Math.ceil(parseInt(records_per_request)/2));
 						records_per_request = Math.ceil(parseInt(records_per_request)/2);
-						$('.wpallimport-modal-message').show();							
+						$('.wpallimport-modal-message').show();
 						//parse_element(1);
-					}				
+					}
 					return;
-				}								
+				}
 
 			}, 'json').fail(function(data) { 													
 
@@ -360,10 +373,9 @@
 					$('#wpallimport-records-per-iteration').html(records_per_request);
 					$('#wpallimport-new-records-per-iteration').html(Math.ceil(parseInt(records_per_request)/2));
 					records_per_request = Math.ceil(parseInt(records_per_request)/2);
-					$('.wpallimport-modal-message').show();					
+					$('.wpallimport-modal-message').show();
 					//parse_element(1);
 				}
-												
 			});			
 		}		
 		

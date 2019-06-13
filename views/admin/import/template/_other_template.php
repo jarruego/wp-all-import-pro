@@ -1,4 +1,15 @@
-<?php $custom_type = get_post_type_object( $post_type ); ?>
+<?php
+switch ($post_type){
+	case 'taxonomies':
+		$custom_type = new stdClass();
+		$custom_type->labels = new stdClass();
+		$custom_type->labels->singular_name = __('Taxonomy Term', 'wp_all_import_plugin');
+		break;
+	default:
+		$custom_type = get_post_type_object( $post_type );
+		break;
+}
+?>
 <div class="wpallimport-collapsed closed wpallimport-section ">
 	<div class="wpallimport-content-section ">
 		<div class="wpallimport-collapsed-header">
@@ -29,7 +40,7 @@
 								<div class="switcher-target-status_xpath">
 									<div class="input">
 										&nbsp;<input type="text" class="smaller-text" name="status_xpath" style="width:190px;" value="<?php echo esc_attr($post['status_xpath']) ?>"/>
-										<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'publish\', \'draft\', \'trash\').', 'wp_all_import_plugin') ?>" style="position:relative; top:13px; float: right;">?</a>
+										<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'publish\', \'draft\', \'trash\', \'private\').', 'wp_all_import_plugin') ?>" style="position:relative; top:13px; float: right;">?</a>
 									</div>
 								</div>
 							</div>								
@@ -155,8 +166,8 @@
 										foreach ($post_formats[0] as $post_format) {
 											?>
 											<div class="input">
-												<input type="radio" id="post_format_<?php echo $post_format . "_" . $entry; ?>" name="post_format" value="<?php echo $post_format; ?>" <?php echo $post_format == $post['post_format'] ? 'checked="checked"' : '' ?> />
-												<label for="post_format_<?php echo $post_format . "_" . $entry; ?>"><?php _e( ucfirst($post_format), 'wp_all_import_plugin') ?></label>
+												<input type="radio" id="post_format_<?php echo $post_format; ?>" name="post_format" value="<?php echo $post_format; ?>" <?php echo $post_format == $post['post_format'] ? 'checked="checked"' : '' ?> />
+												<label for="post_format_<?php echo $post_format; ?>"><?php _e( ucfirst($post_format), 'wp_all_import_plugin') ?></label>
 											</div>
 											<?php
 										}
@@ -176,7 +187,9 @@
 					</tr>
 					<?php endif; ?>		
 
-					<?php if ( 'page' == $post_type ):?>							
+					<?php
+					global $wp_version;
+					if ( 'page' == $post_type || version_compare($wp_version, '4.7.0', '>=') ):?>
 					<tr>
 						<td>
 							<h4><?php _e('Page Template', 'wp_all_import_plugin') ?></h4>
@@ -208,7 +221,7 @@
 						<td>
 							<?php if ( 'page' == $post_type ):?>	
 
-								<h4><?php _e('Page Parent', 'wp_all_import_plugin') ?><a href="#help" class="wpallimport-help" title="<?php _e('Enter the slug of the desired page parent. If adding the child and parent pages in the same import, set \'Records per Iteration\' to 1, run the import twice, or run separate imports for child and parent pages.', 'wp_all_import_plugin') ?>" style="position:relative; top:-1px;">?</a></h4>
+								<h4><?php _e('Page Parent', 'wp_all_import_plugin') ?><a href="#help" class="wpallimport-help" title="<?php _e('Enter the ID, title, or slug of the desired page parent. If adding the child and parent pages in the same import, set \'Records per Iteration\' to 1, run the import twice, or run separate imports for child and parent pages.', 'wp_all_import_plugin') ?>" style="position:relative; top:-1px;">?</a></h4>
 
 								<div class="input">
 									<input type="radio" id="is_multiple_page_parent_yes" name="is_multiple_page_parent" value="yes" <?php echo 'yes' == $post['is_multiple_page_parent'] ? 'checked="checked"' : '' ?> class="switcher" style="margin-left:0;"/>
@@ -234,7 +247,7 @@
 
 							<?php if ( 'page' != $post_type && $custom_type->hierarchical ): ?>
 
-								<h4><?php _e('Post Parent', 'wp_all_import_plugin') ?><a href="#help" class="wpallimport-help" title="<?php _e('Enter the slug of the desired post parent. If adding the child and parent posts in the same import, set \'Records per Iteration\' to 1, run the import twice, or run separate imports for child and parent posts.', 'wp_all_import_plugin') ?>" style="position:relative; top:-1px;">?</a></h4>
+								<h4><?php _e('Post Parent', 'wp_all_import_plugin') ?><a href="#help" class="wpallimport-help" title="<?php _e('Enter the ID, title, or slug of the desired post parent. If adding the child and parent posts in the same import, set \'Records per Iteration\' to 1, run the import twice, or run separate imports for child and parent posts.', 'wp_all_import_plugin') ?>" style="position:relative; top:-1px;">?</a></h4>
 								
 								<div class="input">
 									<input type="radio" id="is_multiple_page_parent_yes" name="is_multiple_page_parent" value="yes" <?php echo 'yes' == $post['is_multiple_page_parent'] ? 'checked="checked"' : '' ?> class="switcher" style="margin-left:0;"/>

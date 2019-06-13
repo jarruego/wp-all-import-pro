@@ -15,7 +15,7 @@
 		<?php endif ?>
 			
 		<?php if (isset($title)): ?>
-			<h2 class="title"><?php echo $title ?></h2>
+			<h2 class="title"><?php echo $title; ?></h2>
 		<?php endif ?>
 		<?php if (isset($content)): ?>
 			<?php echo apply_filters('the_content', $content) ?>

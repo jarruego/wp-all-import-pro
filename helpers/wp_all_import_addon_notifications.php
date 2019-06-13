@@ -11,7 +11,7 @@ if ( ! function_exists('wp_all_import_addon_notifications') ){
 			$parent_theme_name = ($parent_theme) ? $parent_theme->get('Name') : '';							
 
 			$current_themes = array($theme_name, $parent_theme_name);
-			
+
 			$recommended_addons = array();
 			
 			// Reales WP Add-On
@@ -35,7 +35,11 @@ if ( ! function_exists('wp_all_import_addon_notifications') ){
 			}
 			// WP Job Manager Add-On
 			if ( is_plugin_active('wp-job-manager/wp-job-manager.php') 
-				and is_wp_error(validate_plugin('wp-job-manager-xml-csv-listings-import/wp-job-manager-add-on.php')) )
+				and is_wp_error(validate_plugin('wp-job-manager-xml-csv-listings-import/wp-job-manager-add-on.php'))
+					and ! in_array('Listify', $current_themes)
+						and ! in_array('Jobify', $current_themes)
+							and ! in_array('Listable', $current_themes)
+								and ! in_array('My Listing', $current_themes) )
 			{
 				$recommended_addons[] = array(
 					'title' => 'WP Job Manager',
@@ -86,7 +90,16 @@ if ( ! function_exists('wp_all_import_addon_notifications') ){
 					'title' => 'Jobify',
 					'url'   => 'https://wordpress.org/plugins/jobify-xml-csv-listings-import/'
 				);
-			}			
+			}
+			// Listable Add-On
+			if ( in_array('Listable', $current_themes)
+				and is_wp_error(validate_plugin('import-xml-csv-listings-to-listable-theme/listable-add-on.php')))
+			{
+				$recommended_addons[] = array(
+					'title' => 'Listable',
+					'url'   => 'https://wordpress.org/plugins/import-xml-csv-listings-to-listable-theme/'
+				);
+			}
 			// Yoast SEO Add-On
 			if ( is_plugin_active('wordpress-seo/wp-seo.php')
 				and is_wp_error(validate_plugin('yoast-seo-settings-xml-csv-import/yoast-addon.php')))

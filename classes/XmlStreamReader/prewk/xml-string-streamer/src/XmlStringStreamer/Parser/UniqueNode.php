@@ -91,7 +91,7 @@ class UniqueNode implements ParserInterface
     protected function getOpeningTagPos()
     {
         $startPositionInBlob = false;
-        if (preg_match("/<" . preg_quote($this->options["uniqueNode"]) . "(>| )/", $this->workingBlob, $matches, PREG_OFFSET_CAPTURE) === 1) {
+        if (preg_match("/<" . preg_quote($this->options["uniqueNode"]) . "(>| )/", $this->workingBlob, $matches, PREG_OFFSET_CAPTURE) === 1) {            
             $startPositionInBlob = $matches[0][1];
         }
 
@@ -129,7 +129,7 @@ class UniqueNode implements ParserInterface
      * @return bool|int Either returns the char position of the closing tag or false
      */
     protected function getClosingTagPos()
-    {
+    {        
         $endPositionInBlob = strpos($this->workingBlob, "</" . $this->options["uniqueNode"] . ">");
         if ($endPositionInBlob === false) {
 
